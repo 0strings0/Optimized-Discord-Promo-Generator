@@ -1,18 +1,17 @@
-# OperaGX Promo Generator
+# Discord Promo Generator
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-Last Updated On : December 21, 2023
+Last Updated On : December 22, 2023
 
-Support Me By Buying Proxies From [Here](https://kocerroxy.com/signup?referral=6468e6061314e921a9111bb8)
+Support The Original Creator By Buying Proxies From [Here](https://kocerroxy.com/signup?referral=6468e6061314e921a9111bb8)
 
 ## Overview
 
-This Python script allows you to generate discord promo links. It utilizes threading for concurrent generation, and you have the option to use proxies to avoid rate limits.
-
+This Python script allows you to generate discord promo links. It uses optimized CPU threading to generate links. It can generate around 350 links with 8 threads before rate limited. Use a VPN after being rate limited or use proxy links.
 ## Features
 
-- Multi-threaded promo code generation
+- Multi-threaded code generation
 - Proxy support to bypass rate limits
 - User-friendly console interface
 
@@ -35,8 +34,3 @@ username:password@host:port
 python gen.py
 ```
 4. Enter the number of threads when prompted.
-
-# Note
-This script is intended for educational purposes only. Use it responsibly and respect Discord's & OperaGx's terms of service.
-
-[![Star History Chart](https://api.star-history.com/svg?repos=JOY6IX9INE/OperaGX-Discord-Promo-Gen&type=Date)](https://star-history.t9t.io/#JOY6IX9INE/OperaGX-Discord-Promo-Gen&Date)
