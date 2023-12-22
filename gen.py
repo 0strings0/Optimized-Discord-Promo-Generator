@@ -32,13 +32,16 @@ class PromoGenerator:
             "partnerUserId": str(uuid.uuid4())
         }
 
-        retry_attempts = 3  # You can adjust the number of retry attempts
+        retry_attempts = 2
 
         for _ in range(retry_attempts):
             try:
                 with requests.Session() as session:
                     if self.proxy:
-                        # ... (proxy setup remains unchanged)
+                        credentials, host = self.proxy.split('@')
+                        user, password = credentials.split(':')
+                        host, port = host.split(':')
+                        formatted_proxy = f"http://{user}:{password}@{host}:{port}"
                         response = session.post(url, json=data, headers=headers, proxies={'http': formatted_proxy, 'https': formatted_proxy}, timeout=5)
                     else:
                         response = session.post(url, json=data, headers=headers, timeout=5)
@@ -54,7 +57,7 @@ class PromoGenerator:
                         return link
                 elif response.status_code == 429:
                     return "rate-limited"
-                elif response.status_code == 504:  # Skip handling 504 errors
+                elif response.status_code == 504:  
                     continue
                 else:
                     continue
@@ -62,9 +65,9 @@ class PromoGenerator:
                 # Hide the specific timeout error
                 continue
             except requests.exceptions.RequestException as e:
-                time.sleep(1)  # Add a small delay before retrying
+                time.sleep(0.5)  
 
-        return " "
+        return "Max Retries"
 
     @staticmethod
     def get_timestamp():
@@ -85,9 +88,10 @@ class PromoManager:
                     result = future.result()
                     if "rate-limited" in result:
                         print(f"{PromoGenerator.get_timestamp()} {PromoGenerator.yellow} You are being rate-limited!")
+                        quit()
                     elif "Request failed" in result:
                         print(f"{PromoGenerator.get_timestamp()} {PromoGenerator.red} {result}")
-                    else:
+                    elif "Max Retries" not in result:  
                         print(f"{PromoGenerator.get_timestamp()} {PromoGenerator.green} Generated Promo Link : {result}")
                         with open("promos.txt", "a") as f:
                             f.write(f"{result}\n")
@@ -101,9 +105,10 @@ class PromoManager:
             result = generator.generate_promo()
             if "rate-limited" in result:
                 print(f"{PromoGenerator.get_timestamp()} {PromoGenerator.yellow} You are being rate-limited!")
+                quit()
             elif "Request failed" in result:
                 print(f"{PromoGenerator.get_timestamp()} {PromoGenerator.red} {result}")
-            else:
+            elif "Max Retries" not in result:  # Add this condition
                 print(f"{PromoGenerator.get_timestamp()} {PromoGenerator.green} Generated Promo Link : {result}")
                 with open("promos.txt", "a") as f:
                     f.write(f"{result}\n")
