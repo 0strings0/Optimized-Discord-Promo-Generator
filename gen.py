@@ -64,6 +64,8 @@ class PromoGenerator:
             except requests.exceptions.RequestException as e:
                 time.sleep(1)  # Add a small delay before retrying
 
+        return " "
+
     @staticmethod
     def get_timestamp():
         time_idk = time.strftime('%H:%M:%S')
