@@ -8,7 +8,6 @@ from random import choice
 
 os.system('cls' if os.name == 'nt' else 'clear')
 
-
 class Counter:
     count = 0
 
@@ -58,15 +57,12 @@ class PromoGenerator:
                 elif response.status_code == 504:  # Skip handling 504 errors
                     continue
                 else:
-                    return f"Request failed : {response.status_code}"
+                    continue
             except requests.exceptions.ReadTimeout:
                 # Hide the specific timeout error
                 continue
             except requests.exceptions.RequestException as e:
-                print(f"{self.get_timestamp()} {self.red} Request Failed : {e}")
                 time.sleep(1)  # Add a small delay before retrying
-
-        return f"Max retry attempts reached"
 
     @staticmethod
     def get_timestamp():
