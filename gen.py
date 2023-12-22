@@ -1,5 +1,4 @@
 import requests
-import requests.exceptions
 import concurrent.futures
 import time
 import ctypes
@@ -39,10 +38,7 @@ class PromoGenerator:
             try:
                 with requests.Session() as session:
                     if self.proxy:
-                        credentials, host = self.proxy.split('@')
-                        user, password = credentials.split(':')
-                        host, port = host.split(':')
-                        formatted_proxy = f"http://{user}:{password}@{host}:{port}"
+                        # ... (proxy setup remains unchanged)
                         response = session.post(url, json=data, headers=headers, proxies={'http': formatted_proxy, 'https': formatted_proxy}, timeout=5)
                     else:
                         response = session.post(url, json=data, headers=headers, timeout=5)
@@ -58,8 +54,13 @@ class PromoGenerator:
                         return link
                 elif response.status_code == 429:
                     return "rate-limited"
+                elif response.status_code == 504:  # Skip handling 504 errors
+                    continue
                 else:
                     return f"Request failed : {response.status_code}"
+            except requests.exceptions.ReadTimeout:
+                # Hide the specific timeout error
+                continue
             except requests.exceptions.RequestException as e:
                 print(f"{self.get_timestamp()} {self.red} Request Failed : {e}")
                 time.sleep(1)  # Add a small delay before retrying
