@@ -8,6 +8,7 @@ from random import choice
 
 os.system('cls' if os.name == 'nt' else 'clear')
 
+
 class Counter:
     count = 0
 
