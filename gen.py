@@ -37,14 +37,8 @@ class PromoGenerator:
 
         for _ in range(retry_attempts):
             try:
-                if self.proxy:
-                    credentials, host = self.proxy.split('@')
-                    user, password = credentials.split(':')
-                    host, port = host.split(':')
-                    formatted_proxy = f"http://{user}:{password}@{host}:{port}"
-                    response = self.session.post(url, json=data, headers=headers, proxies={'http': formatted_proxy, 'https': formatted_proxy}, timeout=5)
-                else:
-                    response = self.session.post(url, json=data, headers=headers, timeout=5)
+                proxies = {'http': self.proxy, 'https': self.proxy} if self.proxy else None
+                response = self.session.post(url, json=data, headers=headers, proxies=proxies, timeout=5)
 
                 if response.status_code == 200:
                     token = response.json().get('token')
@@ -62,10 +56,7 @@ class PromoGenerator:
                     continue
                 else:
                     continue
-            except requests.exceptions.ReadTimeout:
-                # Hide the specific timeout error
-                continue
-            except requests.exceptions.RequestException as e:
+            except requests.exceptions.RequestException:
                 time.sleep(0.5)
 
         return "Max Retries"
@@ -76,6 +67,8 @@ class PromoGenerator:
         return f'[\x1b[90m{time_idk}\x1b[0m]'
 
 class PromoManager:
+    CHUNK_SIZE = 18
+
     def __init__(self):
         self.num_threads = int(input(f"{PromoGenerator.get_timestamp()} {PromoGenerator.blue} Enter Number Of Threads : "))
         with open("proxies.txt") as f:
@@ -83,22 +76,21 @@ class PromoManager:
 
         self.set_window_icon("icon.ico")
 
+
     def start_promo_generation(self):
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.num_threads) as executor:
             futures = {executor.submit(self.generate_promo, choice(self.proxies) if self.proxies else None): i for i in range(self.num_threads)}
             try:
-                chunk_size = 10  # Adjust chunk size as needed
                 results_buffer = []
 
                 for future in concurrent.futures.as_completed(futures):
                     result = future.result()
                     results_buffer.append(result)
 
-                    if len(results_buffer) >= chunk_size:
+                    if len(results_buffer) >= self.CHUNK_SIZE:
                         self.process_results(results_buffer)
                         results_buffer = []
 
-                # Process any remaining results
                 if results_buffer:
                     self.process_results(results_buffer)
             except KeyboardInterrupt:
