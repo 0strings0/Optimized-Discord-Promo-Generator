@@ -9,6 +9,8 @@ Support The Original Creator By Buying Proxies From [Here](https://kocerroxy.com
 ## Overview
 
 This Python script allows you to generate discord promo links. It uses optimized CPU threading to generate links. It can generate around 350 links with 8 threads before rate limited. Use a VPN after being rate limited or use proxy links.
+
+The current version of this generates around 500/m
 ## Features
 
 - Multi-threaded code generation
