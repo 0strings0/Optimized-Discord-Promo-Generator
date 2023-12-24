@@ -50,9 +50,10 @@ class PromoGenerator:
                     token = response.json().get('token')
                     if token:
                         Counter.count += 1
-                        ctypes.windll.kernel32.SetConsoleTitleW(
-                            f"Nitro Promo Generator | By Strings"
-                            f" | Generated : {Counter.count}")
+                        if hasattr(ctypes, 'windll'):
+                            ctypes.windll.kernel32.SetConsoleTitleW(
+                                f"Nitro Promo Generator | By Strings"
+                                f" | Generated : {Counter.count}")
                         link = f"https://discord.com/billing/partner-promotions/1180231712274387115/{token}"
                         return link
                 elif response.status_code == 429:
@@ -79,6 +80,8 @@ class PromoManager:
         self.num_threads = int(input(f"{PromoGenerator.get_timestamp()} {PromoGenerator.blue} Enter Number Of Threads : "))
         with open("proxies.txt") as f:
             self.proxies = f.read().splitlines()
+
+        self.set_window_icon("icon.ico")
 
     def start_promo_generation(self):
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.num_threads) as executor:
@@ -112,6 +115,15 @@ class PromoManager:
                 print(f"{PromoGenerator.get_timestamp()} {PromoGenerator.green} Generated Promo Link : {result}")
                 with open("promos.txt", "a") as f:
                     f.write(f"{result}\n")
+
+    def set_window_icon(self, icon_filename):
+        icon_path = os.path.abspath(icon_filename)
+        if os.name == 'nt' and os.path.isfile(icon_path):
+            try:
+                ctypes.windll.kernel32.SetConsoleIcon(ctypes.windll.shell32.ExtractIconW(0, icon_path, 0))
+            except Exception as e:
+                print(f"Failed to set the window icon: {e}")
+
 
 if __name__ == "__main__":
     manager = PromoManager()
